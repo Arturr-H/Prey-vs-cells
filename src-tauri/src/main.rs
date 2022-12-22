@@ -33,9 +33,10 @@ fn new_game(
     reproduce_chance: f64,
     spawn_chance: f64,
     predator_spawn_chance: f64,
+    size: usize,
     state: tauri::State<GridStateHandler>
 ) -> () {
-    *state.0.lock().unwrap() = Grid::new(20, GridConfig {
+    *state.0.lock().unwrap() = Grid::new(size, GridConfig {
         predator_death_chance,
         predator_reproduce_chance,
         death_chance,

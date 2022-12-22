@@ -4,7 +4,9 @@ const { invoke } = window.__TAURI__.tauri;
 /*- Elements -*/
 const container = document.querySelector("#container");
 const speedSlider = document.querySelector("#speed-slider");
+const sizeSlider = document.querySelector("#size-slider");
 const speedValue = document.querySelector("#speed-value");
+const sizeValue = document.querySelector("#size-value");
 const restartBtn = document.querySelector("#restart-button");
 const slidersContainer = document.querySelector("#sliders");
 
@@ -72,12 +74,12 @@ const sliders = {
 
 /*- Variables -*/
 let speed = 100;
+let size = 20;
 let updateInterval = null;
 
-/*- Get tiles -*/
-const tiles = (() => {
+const generateTiles = () => {
 	const tiles = [];
-	for (let i = 0; i < 20*20; i++) {
+	for (let i = 0; i < size*size; i++) {
 		/*- Create tile -*/
 		const tile = document.createElement("div");
 		tile.classList.add("cell");
@@ -87,7 +89,10 @@ const tiles = (() => {
 		tiles.push(tile);
 	}
 	return tiles;
-})();
+};
+
+/*- Get tiles -*/
+let tiles = generateTiles();
 
 /*- Create new game -*/
 async function new_game() {
@@ -99,6 +104,7 @@ async function new_game() {
 		"reproduceChance"    : parseFloat(document.querySelector("#cell-reproduce-chance-slider").value),
 		"spawnChance"        : parseFloat(document.querySelector("#cell-spawn-chance-slider").value),
 		"predatorSpawnChance"    : parseFloat(document.querySelector("#predator-spawn-chance-slider").value),
+		"size"               : parseInt(document.querySelector("#size-slider").value),
 	});
 	update();
 }
@@ -151,4 +157,20 @@ speedSlider.addEventListener("input", () => {
 	speed = speedSlider.value;
 	speedValue.innerText = Math.max(100 - speed, 1);
 });
+sizeSlider.addEventListener("input", () => {
+	sizeValue.innerText = sizeSlider.value;
+	size = parseInt(sizeSlider.value);
+
+	/*- Update css variables -*/
+	document.documentElement.style.setProperty("--size", sizeSlider.value);
+
+	/*- Remove tiles -*/
+	tiles.forEach(tile => tile.remove());
+
+	/*- Create new tiles -*/
+	tiles = generateTiles();
+});
+
 restartBtn.addEventListener("click", () => new_game());
+
+
