@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="stylesheet" href="style.css" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Tauri App</title>
+		<script type="module" src="/main.js" defer></script>
+
+	</head>
+
+	<body>
+		<div data-tauri-drag-region class="drag-region"></div>
+		<main>
+			
+			<div class="control-area">
+				<div class="cell-container" id="container"></div>
+				<div class="speed-range">
+					<input id="speed-slider" type="range" min="0" max="100" value="100" class="slider" style="direction: rtl;" />
+					<p class="speed-value" id="speed-value">12</p>
+				</div>
+				<button class="restart-button" id="restart-button"></button>
+			</div>
+		</main>
+	</body>
+</html>
