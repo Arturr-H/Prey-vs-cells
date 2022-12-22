@@ -42,16 +42,30 @@ async function update() {
 			if (cell == 0) {
 				tile.style.backgroundColor = "white";
 			}else if (cell == 1) {
-				tile.style.backgroundColor = "blue";
+				tile.style.backgroundColor = "#61b9eb";
 			}else if (cell == 2) {
-				tile.style.backgroundColor = "red";
+				tile.style.backgroundColor = "#61b9eb";
 			}else if (cell == 3) {
-				tile.style.backgroundColor = "black";
+				tile.style.backgroundColor = "white";
 			}
 		}));
-	}).then(() => {
-		/*- Recurse -*/
-		updateInterval = setTimeout(() => update(), speed);
+	}).then(async() => {
+		await invoke("preys_won").then(async e => {
+			if (e == true) {
+				updateInterval = null;
+				alert("Preys won!");
+			}else {
+				await invoke("cells_won").then(e => {
+					if (e == true) {
+						updateInterval = null;
+						alert("Cells won!");
+					}else {
+						/*- Recurse -*/
+						updateInterval = setTimeout(() => update(), speed);
+					}
+				});
+			}
+		});
 	});
 }
 
