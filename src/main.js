@@ -130,6 +130,7 @@ async function update() {
 						updateInterval = null;
 						alert("Cells won!");
 					}else {
+						updateIterations();
 						/*- Recurse -*/
 						updateInterval = setTimeout(() => update(), speed);
 					}
@@ -138,6 +139,12 @@ async function update() {
 		});
 	});
 }
+async function updateIterations() {
+	await invoke("iterations").then(e => {
+		document.querySelector("#iterations").innerText = e;
+	});
+}
+
 
 /*- Event listeners -*/
 speedSlider.addEventListener("input", () => {

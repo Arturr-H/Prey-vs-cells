@@ -18,7 +18,7 @@ pub struct Grid {
 
     /// If has changed
     pub prey_exist: bool,
-    pub cells_exist: bool
+    pub cells_exist: bool,
 }
 
 /*- Grid config -*/
@@ -350,7 +350,8 @@ pub fn new_iteration(grid:&Grid) -> Grid {
     /*- Set changes -*/
     _grid.prey_exist = prey_exist;
     _grid.cells_exist = cells_exist;
-
+    _grid.iterations += 1;
+    
     /*- Set grid to new grid -*/
     _grid
 }

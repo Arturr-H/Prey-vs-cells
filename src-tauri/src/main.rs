@@ -67,6 +67,8 @@ fn get(state: tauri::State<GridStateHandler>) -> Vec<u8> {
 fn preys_won(state: tauri::State<GridStateHandler>) -> bool { let game = state.0.lock().unwrap(); game.prey_exist && !game.cells_exist }
 #[tauri::command]
 fn cells_won(state: tauri::State<GridStateHandler>) -> bool { let game = state.0.lock().unwrap(); game.cells_exist && !game.prey_exist }
+#[tauri::command]
+fn iterations(state: tauri::State<GridStateHandler>) -> usize { let game = state.0.lock().unwrap(); game.iterations }
 
 /*- Main -*/
 fn main() {
@@ -80,7 +82,8 @@ fn main() {
             update,
             get,
             preys_won,
-            cells_won
+            cells_won,
+            iterations
         ])
 
         /*- Hide titlebar -*/
