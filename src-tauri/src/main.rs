@@ -26,8 +26,23 @@ use sim_handler::GridStateHandler;
 
 /*- Commands -*/
 #[tauri::command]
-fn new_game(state: tauri::State<GridStateHandler>) -> () {
-    *state.0.lock().unwrap() = Grid::default();
+fn new_game(
+    predator_death_chance: f64,
+    predator_reproduce_chance: f64,
+    death_chance: f64,
+    reproduce_chance: f64,
+    spawn_chance: f64,
+    predator_spawn_chance: f64,
+    state: tauri::State<GridStateHandler>
+) -> () {
+    *state.0.lock().unwrap() = Grid::new(20, GridConfig {
+        predator_death_chance,
+        predator_reproduce_chance,
+        death_chance,
+        reproduce_chance,
+        spawn_chance,
+        predator_spawn_chance
+    });
 }
 
 /*- Update grid -*/

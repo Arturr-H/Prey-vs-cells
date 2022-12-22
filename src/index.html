@@ -12,14 +12,18 @@
 	<body>
 		<div data-tauri-drag-region class="drag-region"></div>
 		<main>
-			
+			<div id="sliders" class="slider-area">
+			</div>
 			<div class="control-area">
 				<div class="cell-container" id="container"></div>
-				<div class="speed-range">
+				<div class="range">
 					<input id="speed-slider" type="range" min="0" max="100" value="100" class="slider" style="direction: rtl;" />
-					<p class="speed-value" id="speed-value">1</p>
+					<p class="value" id="speed-value">1</p>
 				</div>
 				<button class="restart-button" id="restart-button"></button>
+			</div>
+			<div class="status-area">
+				<h1 id="iterations">0</h1>
 			</div>
 		</main>
 	</body>
