@@ -10,6 +10,10 @@ const sizeValue = document.querySelector("#size-value");
 const restartBtn = document.querySelector("#restart-button");
 const slidersContainer = document.querySelector("#sliders");
 
+/*- Graph -*/
+let x_pos = 0;
+const canvas = document.querySelector("#canvas");
+
 /*- Configuration sliders -*/
 const sliders = {
 	"predator-death-chance": {
@@ -31,6 +35,7 @@ const sliders = {
 		value: 0.1,
 	}
 };
+
 
 /*- Create sliders -*/
 (() => {
@@ -79,7 +84,7 @@ let updateInterval = null;
 
 const generateTiles = () => {
 	const tiles = [];
-	for (let i = 0; i < size*size; i++) {
+	for (let i = 0; i < size * size; i++) {
 		/*- Create tile -*/
 		const tile = document.createElement("div");
 		tile.classList.add("cell");
@@ -97,14 +102,20 @@ let tiles = generateTiles();
 /*- Create new game -*/
 async function new_game() {
 	updateInterval && clearInterval(updateInterval);
+
+	/*- Clear canvas -*/
+	const ctx = canvas.getContext("2d");
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	x_pos = 0;
+
 	await invoke("new_game", {
-		"predatorDeathChance"    : parseFloat(document.querySelector("#predator-death-chance-slider").value),
+		"predatorDeathChance": parseFloat(document.querySelector("#predator-death-chance-slider").value),
 		"predatorReproduceChance": parseFloat(document.querySelector("#predator-reproduce-chance-slider").value),
-		"deathChance"        : parseFloat(document.querySelector("#cell-death-chance-slider").value),
-		"reproduceChance"    : parseFloat(document.querySelector("#cell-reproduce-chance-slider").value),
-		"spawnChance"        : parseFloat(document.querySelector("#cell-spawn-chance-slider").value),
-		"predatorSpawnChance"    : parseFloat(document.querySelector("#predator-spawn-chance-slider").value),
-		"size"               : parseInt(document.querySelector("#size-slider").value),
+		"deathChance": parseFloat(document.querySelector("#cell-death-chance-slider").value),
+		"reproduceChance": parseFloat(document.querySelector("#cell-reproduce-chance-slider").value),
+		"spawnChance": parseFloat(document.querySelector("#cell-spawn-chance-slider").value),
+		"predatorSpawnChance": parseFloat(document.querySelector("#predator-spawn-chance-slider").value),
+		"size": parseInt(document.querySelector("#size-slider").value),
 	});
 	update();
 }
@@ -114,29 +125,32 @@ async function update() {
 	await invoke("update").then(async () => {
 		await invoke("get").then(e => e.forEach((cell, index) => {
 			let tile = tiles[index];
-			
+
 			if (cell == 0) {
 				tile.style.backgroundColor = "white";
-			}else if (cell == 1) {
+			} else if (cell == 1) {
 				tile.style.backgroundColor = "#61b9eb";
-			}else if (cell == 2) {
+			} else if (cell == 2) {
 				tile.style.backgroundColor = "#61b9eb";
-			}else if (cell == 3) {
-				tile.style.backgroundColor = "#0080dd";
+			} else if (cell == 3) {
+				tile.style.backgroundColor = "#ea5a5a";
 			}
 		}));
-	}).then(async() => {
+	}).then(async () => {
 		await invoke("preys_won").then(async e => {
 			if (e == true) {
 				updateInterval = null;
 				alert("Preys won!");
-			}else {
+			} else {
 				await invoke("cells_won").then(e => {
+					setProportions();
+
 					if (e == true) {
 						updateInterval = null;
 						alert("Cells won!");
-					}else {
+					} else {
 						updateIterations();
+
 						/*- Recurse -*/
 						updateInterval = setTimeout(() => update(), speed);
 					}
@@ -149,6 +163,52 @@ async function updateIterations() {
 	await invoke("iterations").then(e => {
 		document.querySelector("#iterations").innerText = e;
 	});
+}
+async function setProportions() {
+	await invoke("amount_of_cells").then(async cells => {
+		await invoke("amount_of_predators").then(async predators => {
+			await invoke("size").then(size => {
+				let total = cells + predators;
+				let preyProportion = cells / total;
+				let predatorProportion = predators / total;
+				appendToGraph([preyProportion, predatorProportion]);
+				
+
+				document.querySelector("#prey-proportion").style.width = preyProportion * 100 + "%";
+				document.querySelector("#predator-proportion").style.width = predatorProportion * 100 + "%";
+				document.querySelector("#dead-proportion").style.width = (size * size - total) / (size * size) * 100 + "%";
+			})
+		});
+	});
+}
+
+/*- Draw lines from bottom ranging from 0 to height of canvas -*/
+function appendToGraph(values) {
+	if (x_pos >= canvas.width) {
+		x_pos = 0;
+	}
+	values.forEach((value, index) => {
+		let y_pos = value * canvas.height;
+		let ctx = canvas.getContext("2d");
+		ctx.beginPath();
+		ctx.moveTo(x_pos, canvas.height);
+		ctx.lineTo(x_pos, canvas.height - y_pos);
+
+		/*- Set color -*/
+		if (index == 0) {
+			ctx.strokeStyle = "#8f9de3";
+		} else if (index == 1) {
+			ctx.strokeStyle = "#ea5a5a";
+		}
+
+		/*- Set width -*/
+		ctx.lineWidth = 2;
+
+		/*- Clear next line with a width of 2 -*/
+		ctx.clearRect(x_pos + 2, 0, 2, canvas.height);
+		ctx.stroke();
+	});
+	x_pos+=1;
 }
 
 

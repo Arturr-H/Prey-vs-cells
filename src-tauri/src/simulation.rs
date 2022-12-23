@@ -1,5 +1,8 @@
+use std::{thread, sync::{Arc, Mutex}};
+
 /*- Imports -*/
 use rand::{self, Rng, rngs::ThreadRng, seq::SliceRandom};
+use rayon::{slice::{ParallelSlice, ParallelSliceMut}, prelude::{ParallelIterator, IntoParallelIterator, IndexedParallelIterator, IntoParallelRefMutIterator}};
 
 /*- Main -*/
 #[derive(Clone)]
@@ -8,7 +11,7 @@ pub struct Grid {
     cells: Vec<Vec<Cell>>,
 
     /// grid size (square).
-    grid_size: usize,
+    pub grid_size: usize,
 
     /// Grid config
     pub config: GridConfig,
@@ -19,6 +22,8 @@ pub struct Grid {
     /// If has changed
     pub prey_exist: bool,
     pub cells_exist: bool,
+    pub amount_of_cells: usize,
+    pub amount_of_predators: usize
 }
 
 /*- Grid config -*/
@@ -45,6 +50,7 @@ pub struct GridConfig {
 
 /*- Cell -*/
 #[derive(Debug, PartialEq, Clone)]
+#[repr(u8)]
 pub enum Cell {
     Dead = 0,
 
@@ -97,7 +103,13 @@ impl Grid {
         };
 
         /*- Return -*/
-        Self { cells, grid_size, config, iterations: 0, prey_exist: true, cells_exist: true }
+        Self { cells, grid_size, config,
+            iterations: 0,
+            prey_exist: true,
+            cells_exist: true,
+            amount_of_cells: 0,
+            amount_of_predators: 0
+        }
     }
 
     /// Get tile at coordinate
@@ -260,6 +272,8 @@ pub fn new_iteration(grid:&Grid) -> Grid {
     /*- If grid changed -*/
     let mut prey_exist = false;
     let mut cells_exist = false;
+    let mut amount_of_predators = 0;
+    let mut amount_of_cells = 0;
 
     /*- Iterate -*/
     for y in 0..grid.grid_size {
@@ -269,6 +283,7 @@ pub fn new_iteration(grid:&Grid) -> Grid {
                 Cell::Predator => {
                     /*- Preys exist -*/
                     prey_exist = true;
+                    amount_of_predators += 1;
 
                     /*- 10% chance to die -*/
                     match rng.gen_bool(grid.config.predator_death_chance) {
@@ -299,6 +314,8 @@ pub fn new_iteration(grid:&Grid) -> Grid {
                 Cell::Female | Cell::Male => {
                     /*- Cells exist -*/
                     cells_exist = true;
+                    amount_of_cells += 1;
+
                     /*- 10% chance to die -*/
                     match rng.gen_bool(grid.config.death_chance) {
                         true => {
@@ -350,6 +367,8 @@ pub fn new_iteration(grid:&Grid) -> Grid {
     /*- Set changes -*/
     _grid.prey_exist = prey_exist;
     _grid.cells_exist = cells_exist;
+    _grid.amount_of_cells = amount_of_cells;
+    _grid.amount_of_predators = amount_of_predators;
     _grid.iterations += 1;
     
     /*- Set grid to new grid -*/

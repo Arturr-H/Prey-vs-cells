@@ -10,6 +10,7 @@
 
 /*- Imports -*/
 use titlebar::WindowExt;
+use rayon::prelude::*;
 
 // Hide titlebar window-extension
 mod titlebar;
@@ -50,7 +51,7 @@ fn new_game(
 #[tauri::command]
 fn update(state: tauri::State<GridStateHandler>) -> () {
     /*- Change all cells -*/
-    let new_grid = new_iteration(&state.0.lock().unwrap());
+    let new_grid = new_iteration(&*state.0.lock().unwrap());
 
     /*- Update state -*/
     *state.0.lock().unwrap() = new_grid;
@@ -70,6 +71,12 @@ fn preys_won(state: tauri::State<GridStateHandler>) -> bool { let game = state.0
 fn cells_won(state: tauri::State<GridStateHandler>) -> bool { let game = state.0.lock().unwrap(); game.cells_exist && !game.prey_exist }
 #[tauri::command]
 fn iterations(state: tauri::State<GridStateHandler>) -> usize { let game = state.0.lock().unwrap(); game.iterations }
+#[tauri::command]
+fn amount_of_cells(state: tauri::State<GridStateHandler>) -> usize { let game = state.0.lock().unwrap(); game.amount_of_cells }
+#[tauri::command]
+fn amount_of_predators(state: tauri::State<GridStateHandler>) -> usize { let game = state.0.lock().unwrap(); game.amount_of_predators }
+#[tauri::command]
+fn size(state: tauri::State<GridStateHandler>) -> usize { let game = state.0.lock().unwrap(); game.grid_size }
 
 /*- Main -*/
 fn main() {
@@ -84,7 +91,10 @@ fn main() {
             get,
             preys_won,
             cells_won,
-            iterations
+            iterations,
+            amount_of_cells,
+            amount_of_predators,
+            size
         ])
 
         /*- Hide titlebar -*/

@@ -54,6 +54,8 @@ main {
 	display: flex;
 	justify-content: center;
 		align-items: center;
+
+	flex-direction: column;
 }
 
 /*- Custom classes -*/
@@ -105,6 +107,13 @@ main {
 	padding-top: 2rem;
 
 	height: 100%;
+
+	border-right: 0.1rem solid #eee;
+	border-left: 0.1rem solid #eee;
+	box-sizing: border-box;
+	padding: 0 1rem;
+
+	box-shadow: 0 0.1rem 0.6rem #ddd;
 }
 
 /*- Speed range -*/
@@ -162,14 +171,16 @@ main {
 	padding: 0;
 	margin: 0;
 
-	width: 5rem;
+	min-width: 4rem;
+	width: min-content;
+	box-sizing: border-box;
+	padding: 0 1rem;
 	height: 100%;
 	background: white;
 	border: 0.1rem solid #ddd;
 	border-radius: 1rem;
 
 	box-sizing: border-box;
-	padding: 0 0.25rem;
 
 	display: flex;
 	justify-content: center;
@@ -192,4 +203,34 @@ button.restart-button {
 	background: #ddd;
 }button.restart-button:active {
 	background: #8f9de3;
+}
+
+/*- Cell proportions -*/
+.proportions {
+	width: 10rem;
+	height: 2rem;
+
+	display: flex;
+	flex-direction: row;
+
+	border-radius: 0.5rem;
+	overflow: hidden;
+
+	border: 0.1rem solid #ddd;
+}.proportions > .proportion {
+	height: 100%;
+	width: 50%;
+}.proportions > .proportion.cell {
+	background: #8f9de3;
+}.proportions > .proportion.empty {
+	background: #eee;
+}.proportions > .proportion.predator {
+	background: #ea5a5a;
+}.proportion-canvas {
+	width: 10rem;
+	aspect-ratio: 1;
+
+	border-radius: 0.5rem;
+	border: 0.1rem solid #ddd;
+	margin-bottom: 1rem;
 }

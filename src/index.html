@@ -17,16 +17,24 @@
 			<div class="control-area">
 				<div class="cell-container" id="container"></div>
 				<div class="range">
+					<p class="value">Speed</p>
 					<input id="speed-slider" type="range" min="0" max="100" value="100" class="slider" style="direction: rtl;" />
 					<p class="value" id="speed-value">1</p>
 				</div>
 				<div class="range">
+					<p class="value">Size</p>
 					<input id="size-slider" type="range" min="10" max="100" value="20" class="slider" style="direction: ltr;" />
-					<p class="value" id="size-value">1</p>
+					<p class="value" id="size-value">20</p>
 				</div>
 				<button class="restart-button" id="restart-button"></button>
 			</div>
 			<div class="status-area">
+				<canvas class="proportion-canvas" id="canvas"></canvas>
+				<div class="proportions">
+					<div class="proportion cell" id="prey-proportion"></div>
+					<div class="proportion predator" id="predator-proportion"></div>
+					<div class="proportion dead" id="dead-proportion"></div>
+				</div>
 				<h1 id="iterations">0</h1>
 			</div>
 		</main>
