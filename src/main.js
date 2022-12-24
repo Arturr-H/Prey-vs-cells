@@ -9,6 +9,8 @@ const speedValue = document.querySelector("#speed-value");
 const sizeValue = document.querySelector("#size-value");
 const restartBtn = document.querySelector("#restart-button");
 const slidersContainer = document.querySelector("#sliders");
+const cellsCanvas = document.querySelector("#cells-canvas");
+const cellsCanvasCtx = cellsCanvas.getContext("2d");
 
 /*- Graph -*/
 let x_pos = 0;
@@ -35,7 +37,6 @@ const sliders = {
 		value: 0.1,
 	}
 };
-
 
 /*- Create sliders -*/
 (() => {
@@ -81,23 +82,8 @@ const sliders = {
 let speed = 100;
 let size = 20;
 let updateInterval = null;
-
-const generateTiles = () => {
-	const tiles = [];
-	for (let i = 0; i < size * size; i++) {
-		/*- Create tile -*/
-		const tile = document.createElement("div");
-		tile.classList.add("cell");
-		container.appendChild(tile);
-
-		/*- Push tile -*/
-		tiles.push(tile);
-	}
-	return tiles;
-};
-
-/*- Get tiles -*/
-let tiles = generateTiles();
+let predatorColor = "#ea5a5a";
+let cellColor = "#8f9de3";
 
 /*- Create new game -*/
 async function new_game() {
@@ -124,17 +110,20 @@ async function new_game() {
 async function update() {
 	await invoke("update").then(async () => {
 		await invoke("get").then(e => e.forEach((cell, index) => {
-			let tile = tiles[index];
+			let x = index % size;
+			let y = Math.floor(index / size);
 
 			if (cell == 0) {
-				tile.style.backgroundColor = "white";
-			} else if (cell == 1) {
-				tile.style.backgroundColor = "#61b9eb";
+				cellsCanvasCtx.fillStyle = "#fff";
+			}if (cell == 1) {
+				cellsCanvasCtx.fillStyle = cellColor;
 			} else if (cell == 2) {
-				tile.style.backgroundColor = "#61b9eb";
+				cellsCanvasCtx.fillStyle = cellColor;
 			} else if (cell == 3) {
-				tile.style.backgroundColor = "#ea5a5a";
+				cellsCanvasCtx.fillStyle = predatorColor;
 			}
+
+			cellsCanvasCtx.fillRect(x * 20, y * 20, 20, 20);
 		}));
 	}).then(async () => {
 		await invoke("preys_won").then(async e => {
@@ -196,9 +185,9 @@ function appendToGraph(values) {
 
 		/*- Set color -*/
 		if (index == 0) {
-			ctx.strokeStyle = "#8f9de3";
+			ctx.strokeStyle = cellColor;
 		} else if (index == 1) {
-			ctx.strokeStyle = "#ea5a5a";
+			ctx.strokeStyle = predatorColor;
 		}
 
 		/*- Set width -*/
@@ -221,14 +210,9 @@ sizeSlider.addEventListener("input", () => {
 	sizeValue.innerText = sizeSlider.value;
 	size = parseInt(sizeSlider.value);
 
-	/*- Update css variables -*/
-	document.documentElement.style.setProperty("--size", sizeSlider.value);
-
-	/*- Remove tiles -*/
-	tiles.forEach(tile => tile.remove());
-
-	/*- Create new tiles -*/
-	tiles = generateTiles();
+	/*- Resize canvas -*/
+	cellsCanvas.width = size * 20;
+	cellsCanvas.height = size * 20;
 });
 
 restartBtn.addEventListener("click", () => new_game());

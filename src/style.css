@@ -81,16 +81,8 @@ main {
 	border: 0.1rem solid #ddd;
 	border-radius: 0.5rem;
 
-	display: grid;
-	grid-template-columns: repeat(var(--size), 1fr);
-	grid-template-rows: repeat(var(--size), 1fr);
-
 	box-sizing: border-box;
 	padding: 0.5rem;
-}.cell-container > .cell {
-	width: 100%;
-	height: 100%;
-	background: white;
 }
 
 /*- Control-area (main container for grid and controls) -*/
